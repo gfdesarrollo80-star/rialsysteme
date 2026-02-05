@@ -3,9 +3,10 @@ import { verifyToken } from "../middlewares/auth.middleware.js";
 
 const router = Router();
 
-router.get("/", verifyToken, (req, res) => {
+// Ruta protegida de prueba
+router.get("/me", verifyToken, (req, res) => {
   res.json({
-    mensaje: "Acceso autorizado",
+    mensaje: "Acceso autorizado ✅",
     usuario: req.user
   });
 });
