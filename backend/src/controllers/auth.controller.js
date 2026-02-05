@@ -12,9 +12,13 @@ export const login = async (req, res) => {
     if (rows.length === 0)
       return res.status(404).json({ error: "Usuario no encontrado" });
 
-    const user = rows[0];
+const user = rows[0];
 
-    const validPassword = await bcrypt.compare(password, user.contrasena);
+console.log("PASSWORD ENVIADO:", password);
+console.log("HASH EN DB:", user.contrasena);
+
+const validPassword = await bcrypt.compare(password, user.contrasena);
+
     if (!validPassword)
       return res.status(401).json({ error: "Credenciales incorrectas" });
 
