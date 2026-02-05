@@ -1,11 +1,13 @@
 import { Router } from "express";
-import { crearUsuario, listarUsuarios } from "../controllers/users.controller.js";
-import auth from "../middlewares/auth.js";
-import rol from "../middlewares/rol.js";
+import { verifyToken } from "../middlewares/auth.middleware.js";
 
 const router = Router();
 
-router.get("/", auth, listarUsuarios);
-router.post("/", auth, rol("colaborador"), crearUsuario);
+router.get("/", verifyToken, (req, res) => {
+  res.json({
+    mensaje: "Acceso autorizado",
+    usuario: req.user
+  });
+});
 
 export default router;
