@@ -32,6 +32,8 @@ export const login = async (req, res) => {
     });
 
   } catch (err) {
-    res.status(500).json({ error: "Error en el servidor" });
-  }
+  console.error("LOGIN ERROR:", err);
+  console.error("JWT_SECRET:", process.env.JWT_SECRET);
+  res.status(500).json({ error: "Error en el servidor" });
+}
 };
