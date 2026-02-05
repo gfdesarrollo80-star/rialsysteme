@@ -19,6 +19,10 @@ console.log("HASH EN DB:", user.contrasena);
 
 const validPassword = await bcrypt.compare(password, user.contrasena);
 
+console.log("PASSWORD ENVIADO:", password);
+console.log("HASH DB:", user.contrasena);
+console.log("COMPARE RESULT:", validPassword);
+
     if (!validPassword)
       return res.status(401).json({ error: "Credenciales incorrectas" });
 
