@@ -1,6 +1,21 @@
+import axios from 'axios';
+
 export default function Login() {
-  const login = () => {
-    alert('CLICK OK');
+  const login = async () => {
+    try {
+      const res = await axios.post(
+        'https://TU-BACKEND.onrender.com/api/auth/login',
+        {
+          usuario: 'admin',
+          password: 'admin',
+        }
+      );
+
+      alert('RESPUESTA: ' + JSON.stringify(res.data));
+    } catch (error) {
+      alert('ERROR: ' + error.message);
+      console.error(error);
+    }
   };
 
   return (
@@ -10,4 +25,3 @@ export default function Login() {
     </div>
   );
 }
-
