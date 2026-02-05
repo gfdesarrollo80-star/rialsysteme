@@ -1,14 +1,14 @@
 import { Router } from "express";
-import { verifyToken } from "../middlewares/auth.middleware.js";
+import { verifyToken } from "../middlewares/auth.js";
+import {
+  getUsers,
+  getUserById,
+} from "../controllers/users.controller.js";
 
 const router = Router();
 
-// Ruta protegida de prueba
-router.get("/me", verifyToken, (req, res) => {
-  res.json({
-    mensaje: "Acceso autorizado ✅",
-    usuario: req.user
-  });
-});
+// rutas protegidas
+router.get("/", verifyToken, getUsers);
+router.get("/:id", verifyToken, getUserById);
 
 export default router;
