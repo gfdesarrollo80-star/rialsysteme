@@ -1,41 +1,60 @@
-import axios from "axios";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "../api/axios";
+import { useAuth } from "../context/AuthContext";
 
 export default function Login() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
   const navigate = useNavigate();
+  const { login } = useAuth();
 
-  const login = async () => {
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError("");
+
     try {
-      const res = await axios.post(
-        "https://rialsysteme-backend.onrender.com/api/auth/login",
-        {
-          usuario: "admin",
-          password: "admin",
-        }
-      );
+      const res = await axios.post("/auth/login", {
+        email,
+        password,
+      });
 
-      // Guardar sesión
-      localStorage.setItem("token", res.data.token);
-      localStorage.setItem("rol", res.data.rol);
-      localStorage.setItem("nombre", res.data.nombre);
+      login(res.data);
 
-      // 👉 IR AL DASHBOARD
-      navigate("/dashboard");
-    } catch (error) {
-      console.error(error);
-
-      if (error.response?.data?.error) {
-        alert(error.response.data.error);
+      if (res.data.user.role === "admin") {
+        navigate("/admin");
       } else {
-        alert("Error de conexión con el servidor");
+        navigate("/dashboard");
       }
+    } catch (err) {
+      setError("Credenciales inválidas");
     }
   };
 
   return (
-    <div style={{ padding: 40 }}>
-      <h2>Login Tesorería</h2>
-      <button onClick={login}>Ingresar</button>
+    <div className="login-container">
+      <form onSubmit={handleSubmit}>
+        <h2>Iniciar sesión</h2>
+
+        {error && <p className="error">{error}</p>}
+
+        <input
+          type="email"
+          placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
+
+        <input
+          type="password"
+          placeholder="Contraseña"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
+
+        <button type="submit">Entrar</button>
+      </form>
     </div>
   );
 }
