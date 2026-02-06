@@ -1,4 +1,39 @@
-/* RESET BÁSICO */
+/* =====================
+   VARIABLES DE TEMA
+===================== */
+
+/* 🌞 TEMA CLARO (default) */
+:root {
+  --bg-main: #f9fafb;
+  --bg-sidebar: #1f2937;
+  --bg-navbar: #111827;
+  --bg-content: #ffffff;
+
+  --text-main: #111827;
+  --text-muted: #d1d5db;
+  --text-white: #ffffff;
+
+  --accent: #2563eb; /* azul */
+}
+
+/* 🌙 TEMA OSCURO (morado) */
+body.dark {
+  --bg-main: #0f172a;
+  --bg-sidebar: #020617;
+  --bg-navbar: #020617;
+  --bg-content: #020617;
+
+  --text-main: #e5e7eb;
+  --text-muted: #9ca3af;
+  --text-white: #ffffff;
+
+  --accent: #7c3aed; /* morado */
+}
+
+/* =====================
+   RESET + BASE
+===================== */
+
 * {
   box-sizing: border-box;
 }
@@ -6,10 +41,14 @@
 body {
   margin: 0;
   font-family: Arial, Helvetica, sans-serif;
-  background-color: #f3f4f6;
+  background-color: var(--bg-main);
+  color: var(--text-main);
 }
 
-/* LAYOUT PRINCIPAL */
+/* =====================
+   LAYOUT
+===================== */
+
 .layout {
   display: flex;
   height: 100vh;
@@ -18,21 +57,20 @@ body {
 /* SIDEBAR */
 .sidebar {
   width: 220px;
-  background-color: #1f2937;
-  color: white;
+  background-color: var(--bg-sidebar);
+  color: var(--text-white);
   padding: 20px;
 }
 
 .sidebar h3 {
   margin-top: 0;
   margin-bottom: 20px;
-  font-size: 18px;
   text-align: center;
 }
 
 .sidebar nav a {
   display: block;
-  color: #d1d5db;
+  color: var(--text-muted);
   text-decoration: none;
   margin-bottom: 12px;
   padding: 8px 10px;
@@ -40,12 +78,11 @@ body {
 }
 
 .sidebar nav a:hover {
-  background-color: #374151;
-  color: white;
+  background-color: rgba(255, 255, 255, 0.1);
 }
 
 .sidebar nav a.active {
-  background-color: #111827;
+  background-color: var(--accent);
   color: white;
   font-weight: bold;
 }
@@ -59,8 +96,8 @@ body {
 
 /* NAVBAR */
 nav {
-  background-color: #111827;
-  color: white;
+  background-color: var(--bg-navbar);
+  color: var(--text-white);
   padding: 12px 20px;
   display: flex;
   justify-content: space-between;
@@ -71,21 +108,24 @@ nav {
 .content {
   flex: 1;
   padding: 20px;
-  background-color: #f9fafb;
+  background-color: var(--bg-main);
   overflow-y: auto;
 }
 
-/* LOGIN */
+/* =====================
+   LOGIN
+===================== */
+
 .login-container {
   display: flex;
   justify-content: center;
   align-items: center;
   height: 100vh;
-  background-color: #1f2937;
+  background-color: var(--bg-sidebar);
 }
 
 .login-container form {
-  background-color: white;
+  background-color: var(--bg-content);
   padding: 30px;
   border-radius: 6px;
   width: 300px;
@@ -105,14 +145,14 @@ nav {
 .login-container button {
   width: 100%;
   padding: 8px;
-  background-color: #1f2937;
+  background-color: var(--accent);
   color: white;
   border: none;
   cursor: pointer;
 }
 
 .login-container button:hover {
-  background-color: #111827;
+  opacity: 0.9;
 }
 
 .error {
