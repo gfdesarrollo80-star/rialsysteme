@@ -1,0 +1,122 @@
+/* RESET BÁSICO */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Arial, Helvetica, sans-serif;
+  background-color: #f3f4f6;
+}
+
+/* LAYOUT PRINCIPAL */
+.layout {
+  display: flex;
+  height: 100vh;
+}
+
+/* SIDEBAR */
+.sidebar {
+  width: 220px;
+  background-color: #1f2937;
+  color: white;
+  padding: 20px;
+}
+
+.sidebar h3 {
+  margin-top: 0;
+  margin-bottom: 20px;
+  font-size: 18px;
+  text-align: center;
+}
+
+.sidebar nav a {
+  display: block;
+  color: #d1d5db;
+  text-decoration: none;
+  margin-bottom: 12px;
+  padding: 8px 10px;
+  border-radius: 4px;
+}
+
+.sidebar nav a:hover {
+  background-color: #374151;
+  color: white;
+}
+
+.sidebar nav a.active {
+  background-color: #111827;
+  color: white;
+  font-weight: bold;
+}
+
+/* CONTENEDOR DERECHO */
+.main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* NAVBAR */
+nav {
+  background-color: #111827;
+  color: white;
+  padding: 12px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* CONTENIDO */
+.content {
+  flex: 1;
+  padding: 20px;
+  background-color: #f9fafb;
+  overflow-y: auto;
+}
+
+/* LOGIN */
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #1f2937;
+}
+
+.login-container form {
+  background-color: white;
+  padding: 30px;
+  border-radius: 6px;
+  width: 300px;
+}
+
+.login-container h2 {
+  margin-top: 0;
+  text-align: center;
+}
+
+.login-container input {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 12px;
+}
+
+.login-container button {
+  width: 100%;
+  padding: 8px;
+  background-color: #1f2937;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+.login-container button:hover {
+  background-color: #111827;
+}
+
+.error {
+  color: red;
+  font-size: 14px;
+  margin-bottom: 10px;
+}
