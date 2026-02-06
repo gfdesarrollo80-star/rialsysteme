@@ -3,6 +3,7 @@ import cors from "cors";
 
 import authRoutes from "./routes/auth.routes.js";
 import usersRoutes from "./routes/users.routes.js";
+import adminRoutes from "./routes/admin.routes.js";
 
 const app = express();
 
@@ -13,8 +14,9 @@ app.use(express.json());
 // Rutas
 app.use("/api/auth", authRoutes);
 app.use("/api/users", usersRoutes);
+app.use("/api", adminRoutes);
 
-// Health check (opcional pero útil)
+// Health check
 app.get("/", (req, res) => {
   res.send("API Tesorería funcionando ✅");
 });
