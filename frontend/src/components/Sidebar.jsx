@@ -11,8 +11,11 @@ export default function Sidebar() {
       <nav>
         <NavLink to="/dashboard">Dashboard</NavLink>
 
-        {user?.role === "admin" && (
-          <NavLink to="/admin">Administración</NavLink>
+        {user?.rol_id === 1 && (
+          <>
+            <NavLink to="/admin">Administración</NavLink>
+            <NavLink to="/admin/users">Usuarios</NavLink>
+          </>
         )}
       </nav>
     </aside>
