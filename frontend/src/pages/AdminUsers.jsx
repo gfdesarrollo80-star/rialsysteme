@@ -1,30 +1,22 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "../api/axios";
 
 export default function AdminUsers() {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   const loadUsers = async () => {
-    try {
-      const res = await axios.get("/admin/users");
-      setUsers(res.data);
-    } catch (err) {
-      alert("Error cargando usuarios");
-    } finally {
-      setLoading(false);
-    }
+    const res = await axios.get("/admin/users");
+    setUsers(res.data);
+    setLoading(false);
   };
 
   const deleteUser = async (id) => {
     if (!confirm("¿Desactivar usuario?")) return;
-
-    try {
-      await axios.delete(`/admin/users/${id}`);
-      loadUsers();
-    } catch (err) {
-      alert("Error eliminando usuario");
-    }
+    await axios.delete(`/admin/users/${id}`);
+    loadUsers();
   };
 
   useEffect(() => {
@@ -36,6 +28,13 @@ export default function AdminUsers() {
   return (
     <div>
       <h1>Usuarios</h1>
+
+      <button onClick={() => navigate("/admin/users/create")}>
+        ➕ Nuevo usuario
+      </button>
+
+      <br />
+      <br />
 
       <table width="100%" border="1" cellPadding="8">
         <thead>
