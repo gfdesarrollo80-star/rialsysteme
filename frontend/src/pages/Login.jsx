@@ -1,35 +1,34 @@
-import axios from 'axios';
-
-// URL del backend tomada desde variables de entorno (Render / Vite)
-const API_URL = import.meta.env.VITE_API_URL;
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 export default function Login() {
+  const navigate = useNavigate();
+
   const login = async () => {
     try {
-      // Validación simple para evitar errores silenciosos
-      if (!API_URL) {
-        alert('ERROR: VITE_API_URL no está definida');
-        return;
-      }
-
-      const response = await axios.post(
-        `${API_URL}/api/auth/login`,
+      const res = await axios.post(
+        "https://rialsysteme-backend.onrender.com/api/auth/login",
         {
-          usuario: 'admin',
-          password: 'admin',
+          usuario: "admin",
+          password: "admin",
         }
       );
 
-      alert('LOGIN OK:\n' + JSON.stringify(response.data, null, 2));
-      console.log('LOGIN OK:', response.data);
+      // Guardar datos en localStorage
+      localStorage.setItem("token", res.data.token);
+      localStorage.setItem("rol", res.data.rol);
+      localStorage.setItem("nombre", res.data.nombre);
+
+      // Redirigir al dashboard
+      navigate("/dashboard");
     } catch (error) {
-      console.error('ERROR LOGIN:', error);
-      alert(
-        'ERROR LOGIN:\n' +
-          (error.response
-            ? JSON.stringify(error.response.data, null, 2)
-            : error.message)
-      );
+      console.error(error);
+
+      if (error.response) {
+        alert(error.response.data.error);
+      } else {
+        alert("Error de conexión con el servidor");
+      }
     }
   };
 
