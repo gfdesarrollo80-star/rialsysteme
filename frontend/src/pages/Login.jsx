@@ -14,17 +14,17 @@ export default function Login() {
         }
       );
 
-      // Guardar datos en localStorage
+      // Guardar sesión
       localStorage.setItem("token", res.data.token);
       localStorage.setItem("rol", res.data.rol);
       localStorage.setItem("nombre", res.data.nombre);
 
-      // Redirigir al dashboard
+      // 👉 IR AL DASHBOARD
       navigate("/dashboard");
     } catch (error) {
       console.error(error);
 
-      if (error.response) {
+      if (error.response?.data?.error) {
         alert(error.response.data.error);
       } else {
         alert("Error de conexión con el servidor");
