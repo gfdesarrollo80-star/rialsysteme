@@ -6,7 +6,9 @@ export default function ProtectedRouteByRole({ children, role }) {
 
   if (loading) return <p>Cargando...</p>;
 
-  if (!user || user.role !== role) {
+  if (!user) return <Navigate to="/login" />;
+
+  if (user.rol_id !== role) {
     return <Navigate to="/dashboard" />;
   }
 
