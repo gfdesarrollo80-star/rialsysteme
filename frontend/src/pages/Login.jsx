@@ -7,6 +7,7 @@ export default function Login() {
   const [usuario, setUsuario] = useState("");
   const [contrasena, setContrasena] = useState("");
   const [error, setError] = useState("");
+
   const navigate = useNavigate();
   const { login } = useAuth();
 
@@ -20,15 +21,16 @@ export default function Login() {
         contrasena,
       });
 
+      // Guardar token / user
       login(res.data);
 
-      if (res.data.user.rol_id === 1) {
+      // Redirección por rol
+      if (res.data.user?.rol_id === 1) {
         navigate("/admin");
       } else {
         navigate("/dashboard");
       }
     } catch (err) {
-      console.error(err);
       setError("Credenciales inválidas");
     }
   };
