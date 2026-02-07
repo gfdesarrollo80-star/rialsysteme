@@ -16,11 +16,7 @@ const AdminAudit = () => {
     try {
       setLoading(true);
 
-      const params = {
-        page: pageNumber,
-        order,
-      };
-
+      const params = { page: pageNumber, order };
       if (usuario) params.usuario = usuario;
       if (desde) params.desde = desde;
       if (hasta) params.hasta = hasta;
@@ -31,11 +27,24 @@ const AdminAudit = () => {
       setPagination(res.data.pagination);
       setPage(pageNumber);
     } catch (err) {
-      console.error(err);
       alert("Error cargando auditoría");
     } finally {
       setLoading(false);
     }
+  };
+
+  const downloadPDF = () => {
+    const params = new URLSearchParams();
+    if (usuario) params.append("usuario", usuario);
+    if (desde) params.append("desde", desde);
+    if (hasta) params.append("hasta", hasta);
+    params.append("order", order);
+    params.append("pdf", "true");
+
+    window.open(
+      `${import.meta.env.VITE_API_URL}/audit?${params.toString()}`,
+      "_blank"
+    );
   };
 
   useEffect(() => {
@@ -46,44 +55,24 @@ const AdminAudit = () => {
     <div>
       <h1>Auditoría del sistema</h1>
 
-      {/* 🔎 FILTROS */}
-      <div
-        style={{
-          display: "flex",
-          gap: "12px",
-          marginBottom: "20px",
-          flexWrap: "wrap",
-        }}
-      >
+      <div style={{ display: "flex", gap: "8px", marginBottom: "16px" }}>
         <input
-          type="text"
           placeholder="Usuario"
           value={usuario}
           onChange={(e) => setUsuario(e.target.value)}
         />
-
-        <input
-          type="date"
-          value={desde}
-          onChange={(e) => setDesde(e.target.value)}
-        />
-
-        <input
-          type="date"
-          value={hasta}
-          onChange={(e) => setHasta(e.target.value)}
-        />
-
+        <input type="date" value={desde} onChange={(e) => setDesde(e.target.value)} />
+        <input type="date" value={hasta} onChange={(e) => setHasta(e.target.value)} />
         <select value={order} onChange={(e) => setOrder(e.target.value)}>
           <option value="desc">Más recientes</option>
           <option value="asc">Más antiguos</option>
         </select>
-
         <button onClick={() => loadLogs(1)}>Filtrar</button>
+        <button onClick={downloadPDF}>📄 Descargar PDF</button>
       </div>
 
       {loading ? (
-        <p>Cargando auditoría...</p>
+        <p>Cargando...</p>
       ) : (
         <>
           <table width="100%" border="1" cellPadding="8">
@@ -97,14 +86,6 @@ const AdminAudit = () => {
               </tr>
             </thead>
             <tbody>
-              {logs.length === 0 && (
-                <tr>
-                  <td colSpan="5" style={{ textAlign: "center" }}>
-                    No hay resultados
-                  </td>
-                </tr>
-              )}
-
               {logs.map((log) => (
                 <tr key={log.id}>
                   <td>{log.id}</td>
@@ -116,29 +97,6 @@ const AdminAudit = () => {
               ))}
             </tbody>
           </table>
-
-          {/* 📄 PAGINACIÓN */}
-          {pagination && pagination.totalPages > 1 && (
-            <div style={{ marginTop: "16px", display: "flex", gap: "8px" }}>
-              <button
-                onClick={() => loadLogs(page - 1)}
-                disabled={page === 1}
-              >
-                ◀ Anterior
-              </button>
-
-              <span>
-                Página {pagination.page} de {pagination.totalPages}
-              </span>
-
-              <button
-                onClick={() => loadLogs(page + 1)}
-                disabled={page === pagination.totalPages}
-              >
-                Siguiente ▶
-              </button>
-            </div>
-          )}
         </>
       )}
     </div>
@@ -146,3 +104,4 @@ const AdminAudit = () => {
 };
 
 export default AdminAudit;
+
