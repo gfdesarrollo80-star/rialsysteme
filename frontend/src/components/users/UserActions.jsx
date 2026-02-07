@@ -1,10 +1,8 @@
 import { useState } from "react";
 import axios from "../../api/axios";
-import UserEditModal from "./UserEditModal";
 
 const UserActions = ({ user, onRefresh }) => {
   const [loading, setLoading] = useState(false);
-  const [editing, setEditing] = useState(false);
 
   const toggleActive = async () => {
     const msg = user.activo
@@ -41,4 +39,31 @@ const UserActions = ({ user, onRefresh }) => {
     try {
       setLoading(true);
 
-      await axios.delete(`/admin/users/${user.id}`
+      await axios.delete(`/admin/users/${user.id}`);
+
+      alert("Usuario eliminado correctamente");
+      onRefresh();
+    } catch (err) {
+      console.error(err);
+      alert("Error al eliminar el usuario");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <>
+      <button disabled title="Edición próximamente">
+        ✏️
+      </button>{" "}
+      <button onClick={toggleActive} disabled={loading}>
+        {loading ? "Procesando..." : user.activo ? "Desactivar" : "Activar"}
+      </button>{" "}
+      <button onClick={deleteUser} disabled={loading}>
+        ❌
+      </button>
+    </>
+  );
+};
+
+export default UserActions;
