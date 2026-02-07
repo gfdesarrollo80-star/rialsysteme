@@ -1,7 +1,9 @@
 import pool from "../database/db.js";
+import { generateAuditPDF } from "../services/auditPdf.service.js";
 
 export const getAuditLogs = async (req, res) => {
   try {
+    // 🔐 Solo admin
     if (req.user.rol !== 1) {
       return res.status(403).json({ error: "Acceso denegado" });
     }
@@ -13,6 +15,7 @@ export const getAuditLogs = async (req, res) => {
       page = 1,
       limit = 10,
       order = "desc",
+      pdf,
     } = req.query;
 
     let conditions = [];
@@ -41,6 +44,23 @@ export const getAuditLogs = async (req, res) => {
       conditions.length > 0 ? `WHERE ${conditions.join(" AND ")}` : "";
 
     const sortOrder = order === "asc" ? "ASC" : "DESC";
+
+    // 📄 PDF (sin paginación)
+    if (pdf === "true") {
+      const result = await pool.query(
+        `
+        SELECT id, usuario, accion, tabla, fecha
+        FROM auditoria
+        ${whereClause}
+        ORDER BY fecha ${sortOrder}
+        `,
+        values
+      );
+
+      return generateAuditPDF(result.rows, res);
+    }
+
+    // 📄 Normal (con paginación)
     const offset = (page - 1) * limit;
 
     const countResult = await pool.query(
@@ -55,7 +75,7 @@ export const getAuditLogs = async (req, res) => {
       ${whereClause}
       ORDER BY fecha ${sortOrder}
       LIMIT $${idx} OFFSET $${idx + 1}
-    `,
+      `,
       [...values, limit, offset]
     );
 
@@ -65,7 +85,9 @@ export const getAuditLogs = async (req, res) => {
         page: Number(page),
         limit: Number(limit),
         total: Number(countResult.rows[0].count),
-        totalPages: Math.ceil(countResult.rows[0].count / limit),
+        totalPages: Math.ceil(
+          countResult.rows[0].count / limit
+        ),
       },
     });
   } catch (err) {
