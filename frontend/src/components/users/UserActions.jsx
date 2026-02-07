@@ -3,6 +3,7 @@ import axios from "../../api/axios";
 import UserEditModal from "./UserEditModal";
 
 const UserActions = ({ user, onRefresh }) => {
+  const [loading, setLoading] = useState(false);
   const [editing, setEditing] = useState(false);
 
   const toggleActive = async () => {
@@ -13,13 +14,24 @@ const UserActions = ({ user, onRefresh }) => {
     if (!confirm(msg)) return;
 
     try {
+      setLoading(true);
+
       await axios.patch(`/admin/users/${user.id}/status`, {
         activo: !user.activo,
       });
+
+      alert(
+        user.activo
+          ? "Usuario desactivado correctamente"
+          : "Usuario activado correctamente"
+      );
+
       onRefresh();
     } catch (err) {
       console.error(err);
-      alert("No se pudo cambiar el estado");
+      alert("Error al cambiar el estado del usuario");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -27,31 +39,6 @@ const UserActions = ({ user, onRefresh }) => {
     if (!confirm("¿Eliminar usuario definitivamente?")) return;
 
     try {
-      await axios.delete(`/admin/users/${user.id}`);
-      onRefresh();
-    } catch (err) {
-      console.error(err);
-      alert("No se pudo eliminar el usuario");
-    }
-  };
+      setLoading(true);
 
-  return (
-    <>
-      <button onClick={() => setEditing(true)}>✏️</button>{" "}
-      <button onClick={toggleActive}>
-        {user.activo ? "Desactivar" : "Activar"}
-      </button>{" "}
-      <button onClick={deleteUser}>❌</button>
-
-      {editing && (
-        <UserEditModal
-          user={user}
-          onClose={() => setEditing(false)}
-          onSaved={onRefresh}
-        />
-      )}
-    </>
-  );
-};
-
-export default UserActions;
+      await axios.delete(`/admin/users/${user.id}`
