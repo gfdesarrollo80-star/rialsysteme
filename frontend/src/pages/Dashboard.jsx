@@ -8,11 +8,12 @@ const Dashboard = () => {
 
   const loadStats = async () => {
     try {
-      const res = await axios.get("/admin/dashboard");
+      // 🔑 RUTA CORRECTA SEGÚN server.js
+      const res = await axios.get("/dashboard");
       setStats(res.data);
     } catch (err) {
       console.error(err);
-      alert("Error cargando métricas");
+      alert("Error cargando métricas del dashboard");
     } finally {
       setLoading(false);
     }
