@@ -1,29 +1,20 @@
 import { useEffect, useState } from "react";
 import axios from "../api/axios";
 import StatCard from "../components/dashboard/StatCard";
+import Loader from "../components/Loader";
 
 const Dashboard = () => {
   const [stats, setStats] = useState(null);
-  const [loading, setLoading] = useState(true);
-
-  const loadStats = async () => {
-    try {
-      // 🔑 RUTA CORRECTA SEGÚN server.js
-      const res = await axios.get("/dashboard");
-      setStats(res.data);
-    } catch (err) {
-      console.error(err);
-      alert("Error cargando métricas del dashboard");
-    } finally {
-      setLoading(false);
-    }
-  };
 
   useEffect(() => {
-    loadStats();
+    const load = async () => {
+      const res = await axios.get("/dashboard");
+      setStats(res.data);
+    };
+    load();
   }, []);
 
-  if (loading) return <p>Cargando dashboard...</p>;
+  if (!stats) return <Loader text="Cargando dashboard..." />;
 
   return (
     <div>
