@@ -5,6 +5,7 @@ import Dashboard from "./pages/Dashboard";
 import Admin from "./pages/Admin";
 import AdminUsers from "./pages/AdminUsers";
 import AdminUserCreate from "./pages/AdminUserCreate";
+import AdminAudit from "./pages/AdminAudit";
 
 import ProtectedRoute from "./components/ProtectedRoute";
 import ProtectedRouteByRole from "./components/ProtectedRouteByRole";
@@ -52,6 +53,16 @@ export default function App() {
           element={
             <ProtectedRouteByRole role={1}>
               <AdminUserCreate />
+            </ProtectedRouteByRole>
+          }
+        />
+
+        {/* 🧾 ADMIN - AUDITORÍA */}
+        <Route
+          path="/admin/audit"
+          element={
+            <ProtectedRouteByRole role={1}>
+              <AdminAudit />
             </ProtectedRouteByRole>
           }
         />
