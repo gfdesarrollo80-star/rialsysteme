@@ -7,14 +7,18 @@ export const login = async (req, res) => {
     const { usuario, contrasena } = req.body;
 
     if (!usuario || !contrasena) {
-      return res.status(400).json({ error: "Faltan credenciales" });
+      return res.status(400).json({
+        error: "Usuario y contraseña requeridos",
+      });
     }
 
-    const query = "SELECT * FROM usuarios WHERE usuario = $1 AND activo = true";
-    const { rows } = await pool.query(query, [usuario]);
+    const { rows } = await pool.query(
+      "SELECT * FROM usuarios WHERE usuario = $1 AND activo = true",
+      [usuario]
+    );
 
     if (rows.length === 0) {
-      return res.status(404).json({ error: "Usuario no encontrado" });
+      return res.status(401).json({ error: "Credenciales inválidas" });
     }
 
     const user = rows[0];
@@ -25,7 +29,7 @@ export const login = async (req, res) => {
     );
 
     if (!validPassword) {
-      return res.status(401).json({ error: "Credenciales incorrectas" });
+      return res.status(401).json({ error: "Credenciales inválidas" });
     }
 
     const token = jwt.sign(
@@ -35,17 +39,15 @@ export const login = async (req, res) => {
     );
 
     res.json({
-      mensaje: "Inicio de sesión correcto",
       token,
       user: {
         id: user.id,
         nombre: user.nombre,
-        rol_id: user.rol_id
-      }
+        rol_id: user.rol_id,
+      },
     });
-
   } catch (err) {
-    console.error("LOGIN ERROR:", err);
-    res.status(500).json({ error: "Error en el servidor" });
+    err.status = 500;
+    throw err;
   }
 };
