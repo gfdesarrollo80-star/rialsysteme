@@ -4,6 +4,7 @@ import cors from "cors";
 import authRoutes from "./routes/auth.routes.js";
 import usersRoutes from "./routes/users.routes.js";
 import adminRoutes from "./routes/admin.routes.js";
+import { errorHandler } from "./middlewares/error.middleware.js";
 
 const app = express();
 
@@ -20,6 +21,9 @@ app.use("/api", adminRoutes);
 app.get("/", (req, res) => {
   res.send("API Tesorería funcionando ✅");
 });
+
+// 🔒 Error handler (SIEMPRE AL FINAL)
+app.use(errorHandler);
 
 // Puerto
 const PORT = process.env.PORT || 4000;
