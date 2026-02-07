@@ -2,23 +2,26 @@ import UserActions from "./UserActions";
 
 const UsersTable = ({ users, onRefresh }) => {
   return (
-    <table>
+    <table width="100%" border="1" cellPadding="8">
       <thead>
         <tr>
+          <th>ID</th>
           <th>Nombre</th>
-          <th>Email</th>
+          <th>Usuario</th>
           <th>Rol</th>
-          <th>Estado</th>
+          <th>Activo</th>
           <th>Acciones</th>
         </tr>
       </thead>
+
       <tbody>
         {users.map((u) => (
           <tr key={u.id}>
-            <td>{u.name}</td>
-            <td>{u.email}</td>
-            <td>{u.role}</td>
-            <td>{u.is_active ? "Activo" : "Inactivo"}</td>
+            <td>{u.id}</td>
+            <td>{u.nombre}</td>
+            <td>{u.usuario}</td>
+            <td>{u.rol_id}</td>
+            <td>{u.activo ? "Sí" : "No"}</td>
             <td>
               <UserActions user={u} onRefresh={onRefresh} />
             </td>
