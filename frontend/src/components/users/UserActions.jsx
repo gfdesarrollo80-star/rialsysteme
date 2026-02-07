@@ -1,6 +1,10 @@
+import { useState } from "react";
 import axios from "../../api/axios";
+import UserEditModal from "./UserEditModal";
 
 const UserActions = ({ user, onRefresh }) => {
+  const [editing, setEditing] = useState(false);
+
   const toggleActive = async () => {
     const msg = user.activo
       ? "¿Desactivar este usuario?"
@@ -33,10 +37,19 @@ const UserActions = ({ user, onRefresh }) => {
 
   return (
     <>
+      <button onClick={() => setEditing(true)}>✏️</button>{" "}
       <button onClick={toggleActive}>
         {user.activo ? "Desactivar" : "Activar"}
       </button>{" "}
       <button onClick={deleteUser}>❌</button>
+
+      {editing && (
+        <UserEditModal
+          user={user}
+          onClose={() => setEditing(false)}
+          onSaved={onRefresh}
+        />
+      )}
     </>
   );
 };
