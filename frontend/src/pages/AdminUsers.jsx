@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "../api/axios";
+import UsersTable from "../components/users/UsersTable";
 
 export default function AdminUsers() {
   const [users, setUsers] = useState([]);
@@ -8,15 +9,16 @@ export default function AdminUsers() {
   const navigate = useNavigate();
 
   const loadUsers = async () => {
-    const res = await axios.get("/admin/users");
-    setUsers(res.data);
-    setLoading(false);
-  };
-
-  const deleteUser = async (id) => {
-    if (!confirm("¿Desactivar usuario?")) return;
-    await axios.delete(`/admin/users/${id}`);
-    loadUsers();
+    try {
+      setLoading(true);
+      const res = await axios.get("/admin/users");
+      setUsers(res.data);
+    } catch (err) {
+      console.error(err);
+      alert("Error al cargar usuarios");
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -36,33 +38,7 @@ export default function AdminUsers() {
       <br />
       <br />
 
-      <table width="100%" border="1" cellPadding="8">
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Nombre</th>
-            <th>Usuario</th>
-            <th>Rol</th>
-            <th>Activo</th>
-            <th>Acciones</th>
-          </tr>
-        </thead>
-
-        <tbody>
-          {users.map((u) => (
-            <tr key={u.id}>
-              <td>{u.id}</td>
-              <td>{u.nombre}</td>
-              <td>{u.usuario}</td>
-              <td>{u.rol_id}</td>
-              <td>{u.activo ? "Sí" : "No"}</td>
-              <td>
-                <button onClick={() => deleteUser(u.id)}>❌</button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <UsersTable users={users} onRefresh={loadUsers} />
     </div>
   );
 }
