@@ -1,34 +1,40 @@
-import { useEffect } from "react";
-import api from "../api/axios";
+import { useEffect, useState } from "react";
+import axios from "../api/axios";
+import StatCard from "../components/dashboard/StatCard";
 
-export default function Dashboard() {
-  const nombre = localStorage.getItem("nombre");
-  const rol = localStorage.getItem("rol");
+const Dashboard = () => {
+  const [stats, setStats] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  const loadStats = async () => {
+    try {
+      const res = await axios.get("/admin/dashboard");
+      setStats(res.data);
+    } catch (err) {
+      console.error(err);
+      alert("Error cargando métricas");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    api.get("/users")
-      .then((res) => {
-        console.log("USERS:", res.data);
-      })
-      .catch((err) => {
-        console.error("ERROR API:", err);
-      });
+    loadStats();
   }, []);
 
-  return (
-    <div style={{ padding: 40 }}>
-      <h1>Dashboard</h1>
-      <p>Bienvenido, <strong>{nombre}</strong></p>
-      <p>Rol: {rol}</p>
+  if (loading) return <p>Cargando dashboard...</p>;
 
-      <button
-        onClick={() => {
-          localStorage.clear();
-          window.location.href = "/";
-        }}
-      >
-        Cerrar sesión
-      </button>
+  return (
+    <div>
+      <h1>Dashboard</h1>
+
+      <div style={{ display: "flex", gap: "16px", marginTop: "20px" }}>
+        <StatCard title="Usuarios Totales" value={stats.totalUsers} />
+        <StatCard title="Usuarios Activos" value={stats.activeUsers} />
+        <StatCard title="Usuarios Inactivos" value={stats.inactiveUsers} />
+      </div>
     </div>
   );
-}
+};
+
+export default Dashboard;
