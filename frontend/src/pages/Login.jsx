@@ -4,8 +4,8 @@ import axios from "../api/axios";
 import { useAuth } from "../context/AuthContext";
 
 export default function Login() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [usuario, setUsuario] = useState("");
+  const [contrasena, setContrasena] = useState("");
   const [error, setError] = useState("");
   const navigate = useNavigate();
   const { login } = useAuth();
@@ -16,18 +16,19 @@ export default function Login() {
 
     try {
       const res = await axios.post("/auth/login", {
-        email,
-        password,
+        usuario,
+        contrasena,
       });
 
       login(res.data);
 
-      if (res.data.user.role === "admin") {
+      if (res.data.user.rol_id === 1) {
         navigate("/admin");
       } else {
         navigate("/dashboard");
       }
     } catch (err) {
+      console.error(err);
       setError("Credenciales inválidas");
     }
   };
@@ -40,17 +41,19 @@ export default function Login() {
         {error && <p className="error">{error}</p>}
 
         <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          type="text"
+          placeholder="Usuario"
+          value={usuario}
+          onChange={(e) => setUsuario(e.target.value)}
+          required
         />
 
         <input
           type="password"
           placeholder="Contraseña"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
+          value={contrasena}
+          onChange={(e) => setContrasena(e.target.value)}
+          required
         />
 
         <button type="submit">Entrar</button>
