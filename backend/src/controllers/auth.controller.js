@@ -6,7 +6,11 @@ export const login = async (req, res) => {
   try {
     const { usuario, contrasena } = req.body;
 
+    console.log("=== LOGIN REQUEST ===");
+    console.log("BODY:", req.body);
+
     if (!usuario || !contrasena) {
+      console.log("❌ Faltan credenciales");
       return res.status(400).json({
         error: "Usuario y contraseña requeridos",
       });
@@ -17,18 +21,28 @@ export const login = async (req, res) => {
       [usuario]
     );
 
+    console.log("QUERY RESULT:", rows);
+
     if (rows.length === 0) {
+      console.log("❌ Usuario no encontrado o inactivo");
       return res.status(401).json({ error: "Credenciales inválidas" });
     }
 
     const user = rows[0];
+
+    console.log("USUARIO DB:", user.usuario);
+    console.log("HASH DB:", user.contrasena);
+    console.log("PASSWORD ENVIADO:", contrasena);
 
     const validPassword = await bcrypt.compare(
       contrasena,
       user.contrasena
     );
 
+    console.log("BCRYPT COMPARE RESULT:", validPassword);
+
     if (!validPassword) {
+      console.log("❌ PASSWORD NO COINCIDE");
       return res.status(401).json({ error: "Credenciales inválidas" });
     }
 
@@ -37,6 +51,8 @@ export const login = async (req, res) => {
       process.env.JWT_SECRET,
       { expiresIn: "8h" }
     );
+
+    console.log("✅ LOGIN OK PARA:", user.usuario);
 
     res.json({
       token,
@@ -47,7 +63,7 @@ export const login = async (req, res) => {
       },
     });
   } catch (err) {
-    err.status = 500;
-    throw err;
+    console.error("🔥 LOGIN ERROR:", err);
+    res.status(500).json({ error: "Error interno del servidor" });
   }
 };
