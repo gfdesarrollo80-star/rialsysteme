@@ -1,29 +1,42 @@
-import api from "../../api/axios";
+import axios from "../../api/axios";
 
 const UserActions = ({ user, onRefresh }) => {
-  const toggleStatus = async () => {
-    if (!confirm("¿Cambiar estado del usuario?")) return;
+  const toggleActive = async () => {
+    const msg = user.activo
+      ? "¿Desactivar este usuario?"
+      : "¿Activar este usuario?";
 
-    await api.patch(`/users/${user.id}/status`, {
-      is_active: !user.is_active,
-    });
+    if (!confirm(msg)) return;
 
-    onRefresh();
+    try {
+      await axios.patch(`/admin/users/${user.id}/status`, {
+        activo: !user.activo,
+      });
+      onRefresh();
+    } catch (err) {
+      console.error(err);
+      alert("No se pudo cambiar el estado");
+    }
   };
 
   const deleteUser = async () => {
-    if (!confirm("¿Eliminar usuario?")) return;
+    if (!confirm("¿Eliminar usuario definitivamente?")) return;
 
-    await api.delete(`/users/${user.id}`);
-    onRefresh();
+    try {
+      await axios.delete(`/admin/users/${user.id}`);
+      onRefresh();
+    } catch (err) {
+      console.error(err);
+      alert("No se pudo eliminar el usuario");
+    }
   };
 
   return (
     <>
-      <button onClick={toggleStatus}>
-        {user.is_active ? "Desactivar" : "Activar"}
-      </button>
-      <button onClick={deleteUser}>Eliminar</button>
+      <button onClick={toggleActive}>
+        {user.activo ? "Desactivar" : "Activar"}
+      </button>{" "}
+      <button onClick={deleteUser}>❌</button>
     </>
   );
 };
