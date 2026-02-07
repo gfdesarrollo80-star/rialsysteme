@@ -1,8 +1,8 @@
 import pool from "../database/db.js";
+import { generateAuditPDF } from "../services/auditPdf.service.js";
 
 export const getAuditLogs = async (req, res) => {
   try {
-    // Seguridad: solo admin
     if (req.user.rol !== 1) {
       return res.status(403).json({ error: "Acceso denegado" });
     }
@@ -14,12 +14,8 @@ export const getAuditLogs = async (req, res) => {
       page = 1,
       limit = 10,
       order = "desc",
+      pdf,
     } = req.query;
-
-    const pageNum = Number(page);
-    const limitNum = Number(limit);
-    const offset = (pageNum - 1) * limitNum;
-    const sortOrder = order.toLowerCase() === "asc" ? "ASC" : "DESC";
 
     let conditions = [];
     let values = [];
@@ -46,46 +42,52 @@ export const getAuditLogs = async (req, res) => {
     const whereClause =
       conditions.length > 0 ? `WHERE ${conditions.join(" AND ")}` : "";
 
-    // Total para paginación
-    const countQuery = `
-      SELECT COUNT(*) 
-      FROM auditoria
-      ${whereClause}
-    `;
-    const countResult = await pool.query(countQuery, values);
-    const total = Number(countResult.rows[0].count);
+    const sortOrder = order === "asc" ? "ASC" : "DESC";
 
-    // Datos paginados
-    const dataQuery = `
-      SELECT 
-        id,
-        usuario,
-        accion,
-        tabla,
-        fecha
+    // Si es PDF → sin paginación
+    if (pdf === "true") {
+      const result = await pool.query(
+        `
+        SELECT id, usuario, accion, tabla, fecha
+        FROM auditoria
+        ${whereClause}
+        ORDER BY fecha ${sortOrder}
+      `,
+        values
+      );
+
+      return generateAuditPDF(result.rows, res);
+    }
+
+    const offset = (page - 1) * limit;
+
+    const countResult = await pool.query(
+      `SELECT COUNT(*) FROM auditoria ${whereClause}`,
+      values
+    );
+
+    const dataResult = await pool.query(
+      `
+      SELECT id, usuario, accion, tabla, fecha
       FROM auditoria
       ${whereClause}
       ORDER BY fecha ${sortOrder}
       LIMIT $${idx} OFFSET $${idx + 1}
-    `;
-
-    const dataResult = await pool.query(dataQuery, [
-      ...values,
-      limitNum,
-      offset,
-    ]);
+    `,
+      [...values, limit, offset]
+    );
 
     res.json({
       data: dataResult.rows,
       pagination: {
-        page: pageNum,
-        limit: limitNum,
-        total,
-        totalPages: Math.ceil(total / limitNum),
+        page: Number(page),
+        limit: Number(limit),
+        total: Number(countResult.rows[0].count),
+        totalPages: Math.ceil(countResult.rows[0].count / limit),
       },
     });
   } catch (err) {
-    console.error("AUDIT PAGINATION ERROR:", err);
-    res.status(500).json({ error: "Error obteniendo auditoría" });
+    console.error("AUDIT ERROR:", err);
+    res.status(500).json({ error: "Error en auditoría" });
   }
 };
