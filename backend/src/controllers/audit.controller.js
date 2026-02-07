@@ -7,7 +7,19 @@ export const getAuditLogs = async (req, res) => {
       return res.status(403).json({ error: "Acceso denegado" });
     }
 
-    const { usuario, desde, hasta } = req.query;
+    const {
+      usuario,
+      desde,
+      hasta,
+      page = 1,
+      limit = 10,
+      order = "desc",
+    } = req.query;
+
+    const pageNum = Number(page);
+    const limitNum = Number(limit);
+    const offset = (pageNum - 1) * limitNum;
+    const sortOrder = order.toLowerCase() === "asc" ? "ASC" : "DESC";
 
     let conditions = [];
     let values = [];
@@ -34,7 +46,17 @@ export const getAuditLogs = async (req, res) => {
     const whereClause =
       conditions.length > 0 ? `WHERE ${conditions.join(" AND ")}` : "";
 
-    const query = `
+    // Total para paginación
+    const countQuery = `
+      SELECT COUNT(*) 
+      FROM auditoria
+      ${whereClause}
+    `;
+    const countResult = await pool.query(countQuery, values);
+    const total = Number(countResult.rows[0].count);
+
+    // Datos paginados
+    const dataQuery = `
       SELECT 
         id,
         usuario,
@@ -43,15 +65,27 @@ export const getAuditLogs = async (req, res) => {
         fecha
       FROM auditoria
       ${whereClause}
-      ORDER BY fecha DESC
-      LIMIT 100
+      ORDER BY fecha ${sortOrder}
+      LIMIT $${idx} OFFSET $${idx + 1}
     `;
 
-    const result = await pool.query(query, values);
+    const dataResult = await pool.query(dataQuery, [
+      ...values,
+      limitNum,
+      offset,
+    ]);
 
-    res.json(result.rows);
+    res.json({
+      data: dataResult.rows,
+      pagination: {
+        page: pageNum,
+        limit: limitNum,
+        total,
+        totalPages: Math.ceil(total / limitNum),
+      },
+    });
   } catch (err) {
-    console.error("AUDIT FILTER ERROR:", err);
+    console.error("AUDIT PAGINATION ERROR:", err);
     res.status(500).json({ error: "Error obteniendo auditoría" });
   }
 };
