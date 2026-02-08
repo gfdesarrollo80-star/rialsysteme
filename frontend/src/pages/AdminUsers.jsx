@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "../api/axios";
+import api from "../api/axios";
 import UsersTable from "../components/users/UsersTable";
 
 export default function AdminUsers() {
@@ -11,7 +11,7 @@ export default function AdminUsers() {
   const loadUsers = async () => {
     try {
       setLoading(true);
-      const res = await axios.get("/admin/users");
+      const res = await api.get("/admin/users");
       setUsers(res.data);
     } catch (err) {
       console.error(err);
