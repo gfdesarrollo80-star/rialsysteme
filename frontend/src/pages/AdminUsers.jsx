@@ -11,7 +11,10 @@ export default function AdminUsers() {
   const loadUsers = async () => {
     try {
       setLoading(true);
-      const res = await api.get("/admin/users");
+
+      // ✅ RUTA REAL SEGÚN EL BACKEND
+      const res = await api.get("/users");
+
       setUsers(res.data);
     } catch (err) {
       console.error(err);
